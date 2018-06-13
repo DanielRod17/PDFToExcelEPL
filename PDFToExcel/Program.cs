@@ -170,7 +170,7 @@ namespace PDFToExcel
             }
             catch (IOException e)
             {
-                Console.WriteLine("JEJ " + e);
+                //Console.WriteLine("JEJ " + e);
             }
             Console.ReadKey();
         }
