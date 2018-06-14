@@ -86,10 +86,33 @@ namespace PDFToExcel
                                 }
                                 else
                                 {
-                                    tercis =                        seguns;
-                                    cuarto =                        stringArray[2];
-                                    quinto =                        stringArray[3];
-                                    sexto =                         stringArray[4];
+                                    if (primis.Contains("/"))
+                                    {
+                                        sexto =  stringArray[4];
+                                        quinto = stringArray[3];
+                                        cuarto = stringArray[2];
+                                        tercis = stringArray[1];
+                                        //quinto = "";
+                                        i--;
+                                    }
+                                    else
+                                    {
+                                        if (stringArray[5].Contains("/"))
+                                        {
+                                            tercis = seguns;
+                                            cuarto = stringArray[2];
+                                            quinto = "";
+                                            sexto = "";
+                                            i--;
+                                        }
+                                        else
+                                        {
+                                            tercis = seguns;
+                                            cuarto = stringArray[2];
+                                            quinto = stringArray[3];
+                                            sexto = stringArray[4];
+                                        }
+                                    }
                                 }
                                 if (primis != "NIL")
                                 {
@@ -98,11 +121,11 @@ namespace PDFToExcel
                                     var client =                        new HttpClient();
                                     try
                                     {
-                                        /*var URI =                           "https://eplserver.net/erp/tools/BoxPalletID/Mayur/Mayur.php?jej=1&Product="+primis+"&Roll="+tercis+"&Qty="+cuarto+"&Lot="+quinto+"&Part="+sexto+"&Container=Process";
+                                        var URI =                           "https://eplserver.net/erp/tools/BoxPalletID/Mayur/Mayur.php?jej=1&Product="+primis+"&Roll="+tercis+"&Qty="+cuarto+"&Lot="+quinto+"&Part="+sexto+"&Container=Process";
                                         using (var response = client.GetAsync(URI).Result)
                                         {
                                             string responseData =               response.Content.ReadAsStringAsync().Result;
-                                        }*/
+                                        }
                                     }
                                     catch (HttpRequestException e)
                                     {
