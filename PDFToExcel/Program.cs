@@ -40,6 +40,7 @@ namespace PDFToExcel
                 ITextExtractionStrategy strategy;
                 for (int i = 1; i <= reader.NumberOfPages; i++)
                 {
+                    //////
                     strategy =                          parser.ProcessContent(i, new SimpleTextExtractionStrategy());
                     var s =                             PdfTextExtractor.GetTextFromPage(reader, i, strategy);
                     text +=                             (strategy.GetResultantText());
