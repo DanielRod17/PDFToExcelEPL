@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.parser;
+//using iTextSharp.text.pdf.parser;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Xml;
 
 namespace PDFToExcel
 {
@@ -15,186 +16,132 @@ namespace PDFToExcel
     {
         static void Main(string[] args)
         {
-
-            ////////////////////////////////
-            String path =                       "C:/xampp/htdocs/PdfParser/";
-            string[] files =                    System.IO.Directory.GetFiles(path, "mayur*.pdf");
+            int each =                  0;
+            int contador =              0;
+            string container =          "";
+            int flag =                  0;
+            string[] stringArray =      new string[5];
+            String path =               "C:/xampp/htdocs/PdfParser";
+            string[] files =            System.IO.Directory.GetFiles(path, "mayur*.pdf");
+            string first;
+            string second;
+            string third;
+            string fourth;
+            string fifth;
+            ////////////////////////
             foreach (string jej in files)
             {
                 Console.Write(jej + " ");
-            }
-            ////////////////////////////////
-            String pdf =                        "C:/xampp/htdocs/PdfParser/mayurTest5.pdf";
-            String Container =                  "";
-            int banderola =                     0;
-            var text =                          "";
-            String resultText =                 "";
-            string[] stringArray =              new string[6];
-            int contador =                      0;
-            string septimo =                    "";
-            PdfReader reader;
-            try
-            {
-                reader =                            new PdfReader(pdf);
-                PdfReaderContentParser parser =     new PdfReaderContentParser(reader);
-                ITextExtractionStrategy strategy;
-                for (int i = 1; i <= reader.NumberOfPages; i++)
+                string pathToPdf =          jej;
+                string pathToXml =          Path.ChangeExtension(pathToPdf, ".xml");
+                SautinSoft.PdfFocus f =     new SautinSoft.PdfFocus();
+                f.XmlOptions.ConvertNonTabularDataToSpreadsheet = true;
+
+                //f.OpenPdf(pathToPdf);
+                if (f.PageCount > 0)
                 {
-                    //////
-                    strategy =                          parser.ProcessContent(i, new SimpleTextExtractionStrategy());
-                    var s =                             PdfTextExtractor.GetTextFromPage(reader, i, strategy);
-                    text +=                             (strategy.GetResultantText());
-                }
-                resultText =                    resultText.Replace("-\n", "");
-                string[] sentences =            text.Split(new string[] { "\n" }, StringSplitOptions.None);
-                foreach (string marker in sentences)
-                {
-                    if ((!marker.Contains("JZ") && marker.Length > 45))// || (!marker.Contains("INFD JZ") && marker.Length > 45))
+                    int result =                f.ToXml(pathToXml);
+
+                    //Show HTML document in browser 
+                    if (result == 0)
                     {
-                        string[] words =                    marker.Split(new string[] { " " }, StringSplitOptions.None);
-                        //foreach (string palabra in words)
-                        for (int i = 0; i < words.Length; i++)
-                        {
-                            string palabra =                    words[i];
-                            if ((i+1) < words.Length)
+                        System.Diagnostics.Process.Start(pathToXml);
+                    }
+                }
+                ///////////////////////////////
+                ///////////////////////////////
+                XmlTextReader reader =      new XmlTextReader(pathToXml);
+                while (reader.Read())
+                {
+                    switch (reader.NodeType)
+                    {
+                        case XmlNodeType.Element: // The node is an element.
+                            if (XmlNodeType.Element.ToString() == "Cell")
                             {
-                                septimo =                           words[i+1];
+                                //Console.Write("<" + reader.Name);
+                                //while (reader.MoveToNextAttribute()) // Read the attributes.
+                                //Console.Write(" " + reader.Name + "='" + reader.Value + "'");
+                                //Console.WriteLine(">");
                             }
-                            if(palabra != "NIL")
+                            break;
+                        case XmlNodeType.Text: //Display the text in each element.
+                            if (!reader.Value.Contains("sautinsoft") && !reader.Value.Contains("Click") && !reader.Value.Contains("(Licensed") && !reader.Value.Contains("Converted") && !reader.Value.Contains("trial") && !reader.Value.Contains("PRODUCT CODE") && !reader.Value.Contains("ROLL") && !reader.Value.Contains("QTY") && !reader.Value.Contains("LOT") && !reader.Value.Contains("PART") && !reader.Value.Contains("INFD"))
                             {
-                                Console.Write(palabra + " ");
-                            }else
-                            {
-                                contador =                          0;
-                                continue;
-                            }
-                            stringArray[contador] =             palabra;
-                            if (contador == 5)
-                            {
-                                var primis =                        stringArray[0];
-                                var seguns =                        stringArray[1];
-                                var tercis =                        "";
-                                var cuarto =                        "";
-                                var quinto =                        "";
-                                var sexto =                         "";
-                                if (seguns[0] == '/' || (seguns[0] == 'M' && seguns[1] == 'I' && seguns[2] == 'L'))
+                                //Console.WriteLine(reader.Value);
+                                if (reader.Value != null && reader.Value != "" && reader.Value != "NIL")
                                 {
-                                    primis =                        primis + " " + seguns;
-                                    tercis =                        stringArray[2];
-                                    cuarto =                        stringArray[3];
-                                    quinto =                        stringArray[4];
-                                    sexto =                         stringArray[5];
+                                    Console.Write(reader.Value + " ");
+                                    stringArray[each] = reader.Value;
+                                    each++;
+                                    if (each == 5)
+                                    {
+                                        contador++;
+                                        Console.Write(" " + contador + "\n");
+                                        each = 0;
+                                        //////////////////////
+                                        first = stringArray[0];
+                                        second = stringArray[1];
+                                        third = stringArray[2];
+                                        fourth = stringArray[3];
+                                        fifth = stringArray[4];
+                                        var client = new HttpClient();
+                                        var URI = "https://eplserver.net/erp/tools/BoxPalletID/Mayur/Mayur.php?jej=1&Product=" + first + "&Roll=" + second + "&Qty=" + third + "&Lot=" + fourth + "&Part=" + fifth + "&Container=Process";
+                                        using (var response = client.GetAsync(URI).Result)
+                                        {
+                                            string responseData = response.Content.ReadAsStringAsync().Result;
+                                            if (responseData == "success")
+                                            {
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else if (reader.Value.Contains("'INFD") && !reader.Value.Contains("CONTAINER") && flag == 0)
+                            {
+                                //Console.Write(reader.Value);
+                                string s = reader.Value;
+                                Char charRange = '-';
+                                int endIndex = 0;
+                                int startIndex = s.IndexOf("'");
+                                if (reader.Value.Contains("'INFD-"))
+                                {
+                                    endIndex = s.LastIndexOf(charRange);
                                 }
                                 else
                                 {
-                                    if (primis.Contains("/"))
-                                    {
-                                        sexto =  stringArray[4];
-                                        quinto = stringArray[3];
-                                        cuarto = stringArray[2];
-                                        tercis = stringArray[1];
-                                        //quinto = "";
-                                        i--;
-                                    }
-                                    else
-                                    {
-                                        if (stringArray[5].Contains("/"))
-                                        {
-                                            tercis = seguns;
-                                            cuarto = stringArray[2];
-                                            quinto = "";
-                                            sexto = "";
-                                            i--;
-                                        }
-                                        else
-                                        {
-                                            tercis = seguns;
-                                            cuarto = stringArray[2];
-                                            quinto = stringArray[3];
-                                            sexto = stringArray[4];
-                                        }
-                                    }
+                                    endIndex = s.IndexOf(charRange);
                                 }
-                                if (primis != "NIL")
-                                {
-                                    contador =                          -1;
-                                    Console.Write("\n");
-                                    var client =                        new HttpClient();
-                                    try
-                                    {
-                                        var URI =                           "https://eplserver.net/erp/tools/BoxPalletID/Mayur/Mayur.php?jej=1&Product="+primis+"&Roll="+tercis+"&Qty="+cuarto+"&Lot="+quinto+"&Part="+sexto+"&Container=Process";
-                                        using (var response = client.GetAsync(URI).Result)
-                                        {
-                                            string responseData =               response.Content.ReadAsStringAsync().Result;
-                                        }
-                                    }
-                                    catch (HttpRequestException e)
-                                    {
-                                        System.Diagnostics.Debug.WriteLine(e);
-                                    }
-                                    if (septimo == "EP" || septimo == "SL")
-                                    {
-                                        i++;
-                                        contador =                          -1;
-                                    }
-                                }
+                                int length = endIndex - startIndex - 1;
+                                startIndex++;
+                                container = s.Substring(startIndex, length);
+                                flag = 1;
                             }
-                            contador++;
-                        }
-                    }
-                    else if(marker.Contains("INFD"))
-                    {
-                        if (marker.Contains("INFD-JZ"))
-                        {
-                            string[] words =                            marker.Split(new string[] { " " }, StringSplitOptions.None);
-                            foreach (string palabra in words)
-                            {
-                                if (palabra.Contains("CONTAINER"))
-                                {
-                                    if (banderola == 0)
-                                    {
-                                        Container =                                 palabra.Replace("CONTAINER", "");
-                                        banderola =                                 1;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            string[] words =                            marker.Split(new string[] { " " }, StringSplitOptions.None);
-                            for (int i = 0; i < words.Length; i++)
-                            {
-                                var palabra =                               words[i];
-                                if (palabra == "INFD")
-                                {
-                                    if (words[i+1] == "JZ")
-                                    {
-                                        if (banderola == 0)
-                                        {
-                                            string Cont =                               palabra + " " + words[i + 1] + " " + words[i + 2];
-                                            Container =                                 Cont.Replace("CONTAINER", "");
-                                            banderola =                                 1;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                            break;
                     }
                 }
-                var cliente =                   new HttpClient();
-                var URO =                       "https://eplserver.net/erp/tools/BoxPalletID/Mayur/Mayur.php?jij=1&Container=" + Container;
+                var cliente = new HttpClient();
+                var URO = "https://eplserver.net/erp/tools/BoxPalletID/Mayur/Mayur.php?jij=1&Container=" + container;
                 using (var response = cliente.GetAsync(URO).Result)
                 {
-                    string responseData =           response.Content.ReadAsStringAsync().Result;
+                    string responseData = response.Content.ReadAsStringAsync().Result;
                     if (responseData == "success")
                     {
-                        Console.Write("\nFinished Loading the File for Order "+Container);
+                        Console.Write("\nFinished Loading the File for Order " + container);
+                        each = 0;
+                        contador = 0;
+                        first = "";
+                        second = "";
+                        third = "";
+                        fourth = "";
+                        fifth = "";
+                        container = "";
+                        flag = 0;
+                        System.Threading.Thread.Sleep(3000);
+                        Console.Clear();
                     }
                 }
-            }
-            catch (IOException e)
-            {
-                //Console.WriteLine("JEJ " + e);
+                ///////////////////////////////
+                ///////////////////////////////
             }
             Console.ReadKey();
         }
