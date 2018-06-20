@@ -44,26 +44,26 @@ namespace PDFToExcel
                         Console.WriteLine("PDF: " + URL);
                         using (WebClient clienton = new WebClient())
                         {
-                            clienton.DownloadFile(URL, "C:/Users/luisr/Documents/process.pdf");
+                            clienton.DownloadFile(URL, "C:/Mayur/process.pdf");
                             string first;
                             string second;
                             string third;
                             string fourth;
                             string fifth;
                             ////////////////////////
-                            string pathToPdf = @"C:/Users/luisr/Documents/process.pdf";
-                            System.Threading.Thread.Sleep(5000);
+                            string pathToPdf = @"C:/Mayur/process.pdf";
+                            System.Threading.Thread.Sleep(3000);
                             //string pathToXml = Path.ChangeExtension(pathToPdf, ".xml");
                             //SautinSoft.PdfFocus f = new SautinSoft.PdfFocus();
                             //f.XmlOptions.ConvertNonTabularDataToSpreadsheet = true;
                             SautinSoft.PdfFocus f = new SautinSoft.PdfFocus();
-                            f.OpenPdf("C:/Users/luisr/Documents/process.pdf");
-                            f.ToXml("C:/Users/luisr/Documents/process.xml");
+                            f.OpenPdf("C:/Mayur/process.pdf");
+                            f.ToXml("C:/Mayur/process.xml");
                             f.XmlOptions.ConvertNonTabularDataToSpreadsheet = true;
                             //f.OpenPdf(pathToPdf);
                             if (f.PageCount > 0)
                             {
-                                int result = f.ToXml("C:/Users/luisr/Documents/process.xml");
+                                int result = f.ToXml("C:/Mayur/process.xml");
                                 //Show HTML document in browser 
                                 if (result == 0)
                                 {
@@ -73,7 +73,7 @@ namespace PDFToExcel
                             f.ClosePdf();
                             ///////////////////////////////
                             ///////////////////////////////
-                            XmlTextReader reader = new XmlTextReader("C:/Users/luisr/Documents/process.xml");
+                            XmlTextReader reader = new XmlTextReader("C:/Mayur/process.xml");
                             while (reader.Read())
                             {
                                 switch (reader.NodeType)
@@ -88,7 +88,7 @@ namespace PDFToExcel
                                         }
                                         break;
                                     case XmlNodeType.Text: //Display the text in each element.
-                                        if (!reader.Value.Contains("sautinsoft") && !reader.Value.Contains("Click") && !reader.Value.Contains("(Licensed") && !reader.Value.Contains("Converted") && !reader.Value.Contains("trial") && !reader.Value.Contains("PRODUCT CODE") && !reader.Value.Contains("ROLL") && !reader.Value.Contains("QTY") && !reader.Value.Contains("LOT") && !reader.Value.Contains("PART") && !reader.Value.Contains("INFD"))
+                                        if (!reader.Value.Contains("sautinsoft") && !reader.Value.Contains("Click") && !reader.Value.Contains("(Licensed") && !reader.Value.Contains("CODE") && !reader.Value.Contains("Converted") && !reader.Value.Contains("trial") && !reader.Value.Contains("PRODUCT CODE") && !reader.Value.Contains("ROLL") && !reader.Value.Contains("QTY") && !reader.Value.Contains("LOT") && !reader.Value.Contains("PART") && !reader.Value.Contains("INFD"))
                                         {
                                             //Console.WriteLine(reader.Value);
                                             if (reader.Value != null && reader.Value != "" && reader.Value != "NIL")
@@ -162,8 +162,8 @@ namespace PDFToExcel
                                     flag = 0;
                                     System.Threading.Thread.Sleep(3000);
                                     
-                                    File.Delete("C:/Users/luisr/Documents/process.xml");
-                                    File.Delete("C:/Users/luisr/Documents/process.pdf");
+                                    File.Delete("C:/Mayur/process.xml");
+                                    File.Delete("C:/Mayur/process.pdf");
                                     Console.Clear();
                                 }
                             }
@@ -179,7 +179,10 @@ namespace PDFToExcel
             }
             System.Threading.Thread.Sleep(60000);
             goto X;
-            Console.ReadKey();
+            if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+            {
+                Environment.Exit(0);
+            }
         }
     }
 }
