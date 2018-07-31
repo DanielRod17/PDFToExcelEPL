@@ -121,7 +121,7 @@ namespace PDFToExcel
                                         }
                                         else if (reader.Value.Contains("'INFD") && !reader.Value.Contains("CONTAINER") && flag == 0)
                                         {
-                                            //Console.Write(reader.Value);
+                                            //Console.Write(reader.Vlue);
                                             string s = reader.Value;
                                             Char charRange = '-';
                                             int endIndex = 0;
