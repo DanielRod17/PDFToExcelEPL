@@ -119,22 +119,39 @@ namespace PDFToExcel
                                                 }
                                             }
                                         }
-                                        else if (reader.Value.Contains("'INFD") && !reader.Value.Contains("CONTAINER") && flag == 0)
+                                        else if (reader.Value.Contains("INFD") && !reader.Value.Contains("CONTAINER") && flag == 0)
                                         {
                                             //Console.Write(reader.Vlue);
                                             string s = reader.Value;
                                             Char charRange = '-';
                                             int endIndex = 0;
-                                            int startIndex = s.IndexOf("'");
-                                            if (reader.Value.Contains("'INFD-"))
-                                            {
-                                                endIndex = s.LastIndexOf(charRange);
+                                            int startIndex = 0;
+                                            int length = 0;
+                                            if (reader.Value.Contains("'INFD"))
+                                            { 
+                                                startIndex = s.IndexOf("'");
+                                                if (reader.Value.Contains("'INFD-"))
+                                                {
+                                                    endIndex = s.LastIndexOf(charRange);
+                                                }
+                                                else
+                                                {
+                                                    endIndex = s.IndexOf(charRange);
+                                                }
                                             }
                                             else
                                             {
-                                                endIndex = s.IndexOf(charRange);
+                                                startIndex = -1;
+                                                if (reader.Value.Contains("INFD-"))
+                                                {
+                                                    endIndex = s.LastIndexOf(charRange);
+                                                }
+                                                else
+                                                {
+                                                    endIndex = s.IndexOf(charRange);
+                                                }
                                             }
-                                            int length = endIndex - startIndex - 1;
+                                            length = endIndex - startIndex - 1;
                                             startIndex++;
                                             container = s.Substring(startIndex, length);
                                             flag = 1;
